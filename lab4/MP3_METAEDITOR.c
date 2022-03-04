@@ -8,39 +8,35 @@
 #define ID3_MAX_SIZE 128
 
 typedef struct ID3TAG {
-    char signature[3]; // "TAG"
-    char name[30]; // имя песни
-    char artist[30]; // исполнитль
-    char album[30]; // альбом
-    char year[4]; // год
-    char description[30]; // описание
-    unsigned short number_in_album[1];  //номер трека в альбоме
-    unsigned short null_byte[1]; // нулевой байт, проверка номера в альбоме
-    char genre; // Жанр
+    char signature[3]; 
+    char name[30]; 
+    char artist[30]; 
+    char album[30]; 
+    char year[4]; 
+    char description[30]; 
+    unsigned short number_in_album[1];
+    unsigned short null_byte[1]; 
+    char genre; 
 } ID3TAG;
 
-/* Возвращает кол-во байт на 128 меньше от общего размера файла */
+
 long file_offset(FILE* fp) {
-    fseek(fp, 0, SEEK_END); // Устанавливает индикатор на 0 байт от  конца
-    //ftell(fp) - кол-во байт от начала файла
-    return ftell(fp) - ID3_MAX_SIZE; // на 128 от конца
+    fseek(fp, 0, SEEK_END); 
+    return ftell(fp) - ID3_MAX_SIZE;
 }
 
 int main(int argc, char* argv[]) {
     setlocale(LC_ALL, "Rus");
-    FILE* Filein = NULL; // Изначальный mp3 файл
-    FILE* Fileout = NULL; // Изменённый mp3 файл
-    char* mp3_name; // Название mp3 файла
-    char* tag; // Название тэга
-    char* val; // Испрльзуется в --value=val
+    FILE* Filein = NULL;
+    FILE* Fileout = NULL; 
+    char* mp3_name;
+    char* tag; 
+    char* val;
     ID3TAG* TAGS = NULL;
 
-    /* Если 11 первых символов argv[1] == 11 первым символам '--filepath=',
-       то strncmp() вернёт 0 */
+   
     if (!strncmp(argv[1],"--filepath=",11)) {
-        // Ссылка на следующий эл-т после '='
         mp3_name = strpbrk(argv[1], "=") + 1;
-        // Если файл не открывается то вывести сообщение об ошибке
         if ((Filein = fopen(mp3_name, "rb")) == NULL) {
             printf("Failed to open file %s for reading.\n", mp3_name);
             return 1;
@@ -52,15 +48,10 @@ int main(int argc, char* argv[]) {
     }
 
 
-    // Здесь временно будет храниться вся информация из mp3 файла
     char* temp = (char*) malloc(sizeof(char) * ID3_MAX_SIZE);
-    // Весь массив (все байты) заполняются 0
     memset(temp, 0, ID3_MAX_SIZE);
-    // Устанавливает индикатор на 0 байт от  конца
     fseek(Filein, file_offset(Filein), SEEK_SET);
-    //
     fread(temp, 1, ID3_MAX_SIZE, Filein);
-    // Копируем тэги
     TAGS = (ID3TAG*)(temp);
 
 
@@ -149,7 +140,6 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Закрытие изначального mp3 файла
     fclose(Filein);
 
     if ((Fileout = fopen(mp3_name, "wb+")) == NULL) {
@@ -157,14 +147,10 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
-    // В temp2[] будут временно хранится изменённые тэги
     char* temp2 =(char*) malloc(sizeof(char) * ID3_MAX_SIZE);
-    // Весь массив (все байты) заполняются 0
     memset(temp2, 0, ID3_MAX_SIZE);
-    // Записываем изменённые тэги
     temp2 = (char*)TAGS;
     fseek(Fileout, file_offset(Fileout), SEEK_SET);
-    // Записываем 128 байт из temp2[] 1 раз в Fileout
     fwrite(temp2, 1, ID3_MAX_SIZE, Fileout);
     free(temp2);
     fclose(Fileout);
