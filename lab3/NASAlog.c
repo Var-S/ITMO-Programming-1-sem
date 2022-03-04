@@ -127,7 +127,7 @@ int main(int argc, char** argv) {
     FILE *log_in = fopen("123.txt", "r");
     error_5xx(log_in, stdout);
     printf(" \n ");
-    printf("Write time period in seconds: ");
+    printf(" Write time period in seconds: ");
     scanf("%d", &period);
     Time_Window(log_in, period);
     return 0;
