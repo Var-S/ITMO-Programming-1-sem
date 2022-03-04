@@ -131,4 +131,4 @@ int main(int argc, char** argv) {
     scanf("%d", &period);
     Time_Window(log_in, period);
     return 0;
-} 
+}
