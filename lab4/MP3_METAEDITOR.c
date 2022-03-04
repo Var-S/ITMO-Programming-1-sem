@@ -66,6 +66,7 @@ int main(int argc, char* argv[]) {
         printf("null_byte:           %s\n",TAGS->null_byte);
         printf("Genre:               %d\n\n",TAGS->genre);
     }
+    
         /* --get */
     else if (!strncmp("--get=", argv[2], 6)) {
         tag = strpbrk(argv[2], "=") + 1;
