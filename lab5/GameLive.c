@@ -40,11 +40,13 @@ void gameLife(int** life, int height, int width){
     if(inf == height * width)
         exit(0);
 }
+
 struct Bmp{
     int width;
     int height;
     int size;
 };
+
 int main(int argc, char* argv[]){
     struct Bmp image;
     unsigned char header[54];
